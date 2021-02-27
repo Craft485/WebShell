@@ -1,0 +1,48 @@
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    background: black;
+    color: rgb(0, 122, 0);
+    font-family: Lucida Console, Consolas !important;
+    /* user-select: none; */
+    background-repeat: no-repeat;
+    background-size: cover;
+    overflow: hidden;
+}
+
+input {
+    font-family: Lucida Console, Consolas !important;
+    width: 80%;
+}
+
+:focus {
+    outline: none;
+}
+
+p {
+    margin: 0;
+}
+
+#input, #commands {
+    background: transparent;
+    color: inherit;
+    border: none;
+    font-size: medium;
+}
+
+#commands { 
+    padding-top: 16px; 
+    padding-left: 1%;
+    width: fit-content;
+}
+
+.result { width: fit-content; }
+
+.err {
+    color: red;
+}
+
+/* ::-webkit-scrollbar {
+    display: none;
+} */
