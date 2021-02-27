@@ -26,9 +26,7 @@ class Command {
 function argsParse(args, cmd) {
     let str = false
     args.forEach(arg => {
-        // Is the current arg a valid one
         const r = cmd.args.find(e => e.toLowerCase() === arg.toLowerCase())
-        // If valid arg
         if (r) {
             if (arg.toLowerCase() === '-h' || arg.toLowerCase() === '--help') {
                 if (typeof str === "string") str += '<br>'
@@ -39,15 +37,12 @@ function argsParse(args, cmd) {
     return str
 }
 
-// There HAS to be a better way to do this...
 const help = new Command('help', ['-h', '--help'], 'help [command name]', `Displays list of possible commands`)
 /** @param {String[]} args */
 help.execute = function (args) {
-    // If no args
     if (!args || args.length === 0) {
         const ittr = scripts.entries()
         let str = 'List of commands:<br>'
-        // Go through every command and get its information to compile into a string to return
         for (let i = 0; i < scripts.size; i++) {
             const e = ittr.next().value
             str += `${e[0]} | ${e[1].description}<br>`
@@ -59,9 +54,7 @@ help.execute = function (args) {
         if (argParse) {
             return argParse
         } else {
-            // Is the arg a valid command
             const f = scripts.has(args[0])
-            console.log(f)
             if (f) {
                 const h = scripts.get(args[0])
                 str += h.help()
@@ -77,13 +70,10 @@ set.execute = function(args) {
     if (!args || args.length === 0) {
         return `<div class="err">Err: no arguments provided | See ${this.name} -h</div><br>`
     } else {
-        // Args parse hell
         let str = ''
         const argParse = argsParse(args, set)
-        // If not a help arg
         if (!argParse) {
             args.forEach((arg, i) => {
-                // Switch case used here in case we have many args in the future
                 switch (arg) {
                     case '-bg':
                         const url = args[i + 1]

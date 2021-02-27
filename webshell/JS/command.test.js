@@ -13,7 +13,6 @@ class Command {
         this.args = args
         this.usage = usage
         this.description = description
-        this.usage = usage
     }
     help () {
         return `| ${this.name} |<br>${this.description}<br>${this.usage}`
@@ -61,7 +60,6 @@ help.execute = function (args) {
         } else {
             // Is the arg a valid command
             const f = scripts.has(args[0])
-            console.log(f)
             if (f) {
                 const h = scripts.get(args[0])
                 str += h.help()
@@ -94,10 +92,12 @@ set.execute = function(args) {
                             document.body.style.backgroundColor = url
                             document.body.style.backgroundImage = 'none'
                         }
+                        root.home.usr.bob.preferences.bg = url
                         break;
                     case '-tc':
                         const color = args[i + 1]
                         document.body.style.color = color
+                        root.home.usr.bob.preferences.color = color
                         break;
                     default:
                         break;
@@ -113,7 +113,56 @@ set.execute = function(args) {
 const mkdir = new Command('mkdir', ['dirName'], 'mkdir {dirName}', 'Create a new directory within the current directory')
 /** @param {String[]} args */
 mkdir.execute = function (args) {
-    
+    if (!args || args.length === 0) {
+        return `<div class="err">Err: no arguments provided | See ${this.name} -h</div><br>`
+    } else {
+        const isHelp = (args.includes('-h') || args.includes('--help')) ? true : false
+        if (!isHelp) {
+            let str = ''
+            // Check if new dir name is already here
+            // Else create a new property with the given name
+            const newDirName = args[0]
+            const currentDirs = Object.keys(currentDir)
+            const q = currentDirs.find(element => element === newDirName)
+            if (q) {
+                str = `<div class="err">Err: directory already exists with name ${newDirName}</div><br>`
+            } else {
+                Object.defineProperty(currentDir, newDirName, { writable: true, value: new Object, enumerable: true })
+                str = '<br>'
+            }
+            return str
+        } else {
+            return mkdir.help()
+        }
+    }
 }
 
-const list = [help, set]
+const cd = new Command('cd', ['dirName'], 'cd {dirName}', 'Change the current working directory')
+/** @param {String[]} args */
+cd.execute = function (args) {
+    if (!args || args.length === 0) {
+        return `<div class="err">Err: no arguments provided | See ${this.name} -h</div><br>`
+    } else {
+        const isHelp = (args.includes('-h') || args.includes('--help')) ? true : false
+        if (!isHelp) {
+            let str = ''
+            const newDir = args[0]
+            const currentDirs = Object.keys(currentDir)
+            const q = currentDirs.find(element => element === newDir)
+            if (!q) {
+                str = `<div class="err">Err: No directory found with name <b>${newDir}</b></div><br>`
+            } else {
+                /** @todo: change this to be the actual obj prop */
+                currentDir = currentDir[newDir]
+                // Update dir visually
+                document.getElementById('cursor').innerHTML = `${newDir} >&nbsp`
+                str = '<br>'
+            }
+            return str
+        } else {
+            return cd.help()
+        }
+    }
+}
+
+const list = [help, set, mkdir, cd]

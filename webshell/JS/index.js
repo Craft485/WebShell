@@ -7,8 +7,8 @@ let lastCMD
 function parseCommandLine () {
     const tag = document.createElement('p')
     tag.className = "result"
-    let s = '>&nbsp'
-    const input = document.getElementById("input").value
+    let s = `${document.getElementById('cursor').innerText}`
+    const input = document.getElementById("input").value.trim()
     document.getElementById("input").value = ''
     s += `${input}<br>`
 
@@ -40,14 +40,13 @@ function saveSystem() {
 
 function bootSystem() {
     const drive = JSON.parse(atob(window.localStorage.getItem('WST')))
-    // If the drive is saved, if not we don't really care
-    /** @todo: FIX THIS ASAP THIS IS WRONG */
+    // If the drive is saved load it into root, if not we don't really care
     if (drive) {
         root = drive
         // Load preferences from default user
         const pref = root.home.usr.bob.preferences
         if (pref.color) scripts.get('set').execute(['-bg', pref.bg])
-        
+        if (pref.bg) scripts.get('set').execute(['-tc', pref.color])
     }
 }
 
@@ -63,6 +62,7 @@ window.addEventListener("keydown", e => {
 
 window.addEventListener("load", () => {
     document.getElementById("input").focus()
+    bootSystem()
 })
 // Load commands
 list.forEach(item => {

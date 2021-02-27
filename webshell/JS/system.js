@@ -19,8 +19,8 @@ let root = {
         }
     }
 }
-
-let currentDir
+// Default user
+let currentDir = root.home.usr.bob
 
 window.addEventListener('load', function () {
     setTimeout(() => {
