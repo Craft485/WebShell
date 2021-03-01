@@ -54,9 +54,9 @@ help.execute = function (args) {
         return str
     } else {
         let str = ''
-        const argParse = argsParse(args, help)
-        if (argParse) {
-            return argParse
+        const isHelp = (args.includes('-h') || args.includes('--help')) ? true : false
+        if (isHelp) {
+            return isHelp
         } else {
             // Is the arg a valid command
             const f = scripts.has(args[0])
@@ -77,9 +77,9 @@ set.execute = function(args) {
     } else {
         // Args parse hell
         let str = ''
-        const argParse = argsParse(args, set)
+        const isHelp = (args.includes('-h') || args.includes('--help')) ? true : false
         // If not a help arg
-        if (!argParse) {
+        if (!isHelp) {
             args.forEach((arg, i) => {
                 // Switch case used here in case we have many args in the future
                 switch (arg) {
@@ -104,7 +104,7 @@ set.execute = function(args) {
                 }
             })
         } else {
-            return argParse
+            return isHelp
         }
         return str
     }
@@ -149,13 +149,12 @@ cd.execute = function (args) {
             const newDir = args[0]
             const currentDirs = Object.keys(currentDir)
             const q = currentDirs.find(element => element === newDir)
-            if (!q) {
+            if (!q && newDir !== '..') {
                 str = `<div class="err">Err: No directory found with name <b>${newDir}</b></div><br>`
             } else {
-                /** @todo: change this to be the actual obj prop */
-                currentDir = currentDir[newDir]
+                currentDir = newDir === '..' ? parentDir : currentDir[newDir]
                 // Update dir visually
-                document.getElementById('cursor').innerHTML = `${newDir} >&nbsp`
+                document.getElementById('cursor').innerHTML = `${currentDir.name} >&nbsp`
                 str = '<br>'
             }
             return str
@@ -165,4 +164,25 @@ cd.execute = function (args) {
     }
 }
 
-const list = [help, set, mkdir, cd]
+const ls = new Command('ls', [], 'ls [args]', 'List files and sub directories within the current directory')
+/** @param {String[]} args */
+ls.execute = function (args) {
+    const isHelp = (args.includes('-h') || args.includes('--help')) ? true : false
+    if (!isHelp) {
+        if (!args || args.length === 0 || this.args.length === 0) {
+            let str = ''
+            // Get a list if items in the current directory
+            const items = Object.keys(currentDir)
+            items.forEach(item => {
+                const subject = currentDir[item]
+                // If the item is an object it is representing a directory
+                typeof subject === "object" ? str += `<b><u>-${item}</u></b><br>` : str += `${item}<br>`
+            })
+            return str
+        }
+    } else {
+        return isHelp
+    }
+}
+
+const list = [help, set, mkdir, cd, ls]

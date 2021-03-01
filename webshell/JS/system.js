@@ -4,8 +4,6 @@
  * 
  * Have a master object for the file system, with properties being subdirs
  * @var {Object} root
- * 
- * 
  */
 
 let root = {
@@ -13,7 +11,7 @@ let root = {
     home: {
         usr: {
             bob: {
-                name: 'Bob',
+                name: 'bob',
                 preferences: {}
             }
         }
@@ -21,6 +19,41 @@ let root = {
 }
 // Default user
 let currentDir = root.home.usr.bob
+let parentDir = root.home.usr
+/** 
+ * @param {Object} newDir 
+ * @param {String} newDirName
+ */
+function createDirData (newDir, newDirName) {
+    // Its time to get FUNKY
+    if (!newDir) {   
+        const subdirs = Object.keys(root)
+        subdirs.forEach(subdir => {
+            Object.defineProperties(root[subdir],{
+                name: {
+                    value: subdir,
+                    enumerable: false
+                },
+                parent: {
+                    value: root,
+                    enumerable: false
+                }
+            })
+        })
+    } else {
+        Object.defineProperty(newDir, {
+            name: {
+                value: newDirName,
+                enumerable: false
+            },
+            // Its created with the mkdir command, so we can assume current dir
+            parent: {
+                value: currentDir.name,
+                enumerable: false
+            }
+        })
+    }
+}
 
 window.addEventListener('load', function () {
     setTimeout(() => {
